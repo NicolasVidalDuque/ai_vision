@@ -4,6 +4,7 @@ import time
 from PoseLandmarkDetectorModule import PoseDetector
 from LandmarkDatasetModule import VideoLandmarkDataSet
 from PoseDetectionStrategyModule import PoseDetectionStrategy, MediapipePoseDetectionStrategy
+from ResultSaverModule import ResultSaver
 
 class VideoProcessor:
     """
@@ -147,3 +148,7 @@ class VideoProcessor:
                 The frames per second value to write.
         """
         cv2.putText(img, f'FPS: {int(fps)}', (70, 50), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
+
+    def save_results(self, inyection_result_saver: ResultSaver = None) -> None:
+        instance_result_saver: ResultSaver = inyection_result_saver or ResultSaver()
+        instance_result_saver.save_results(self.video_name, self.videoDataSet)
