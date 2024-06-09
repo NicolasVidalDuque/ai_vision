@@ -1,36 +1,13 @@
-import cv2
-import mediapipe as mp
-from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmarkList, NormalizedLandmark
-from typing import List, Dict
-
+from typing import Dict, Tuple
 
 class BodyLandmark:
-    """
-        A class to represent a single landmark.
+    def __init__(self) -> None:
+        self.__x: float = 0.0
+        self.__y: float = 0.0
+        self.__z: float = 0.0
+        self.__visible: float = 0.0
+        self.__frame: int = 0
 
-        Attributes:
-            __x (float): The x-coordinate of the landmark.
-            __y (float): The y-coordinate of the landmark.
-            __z (float): The z-coordinate of the landmark.
-            __visible (float): The visibility score of the landmark.
-            __frame (int): The frame number the landmark is associated with.
-    """
-
-    def __init__(self, mpLandmark: NormalizedLandmark, frame: int) -> None:
-        """
-            Initializes the Landmark with coordinates and visibility.
-
-            Args:
-                mpLandmark (NormalizedLandmark): A MediaPipe NormalizedLandmark object.
-                frame (int): The frame number the landmark is associated with.
-        """
-        self.__x: float = mpLandmark.x
-        self.__y: float = mpLandmark.y
-        self.__z: float = mpLandmark.z
-        self.__visible: float = mpLandmark.visibility
-        self.__frame: int = frame
-
-    # Getter methods
     def get_x(self) -> float:
         return self.__x
 
@@ -46,8 +23,30 @@ class BodyLandmark:
     def get_frame(self) -> int:
         return self.__frame
 
+    def set_x(self, x: float) -> None:
+        self.__x = x
+
+    def set_y(self, y: float) -> None:
+        self.__y = y
+
+    def set_z(self, z: float) -> None:
+        self.__z = z
+
+    def set_visible(self, visible: float) -> None:
+        self.__visible = visible
+
+    def set_frame(self, frame: int) -> None:
+        self.__frame = frame
+
+    def set_all(self, x: float, y: float, z: float, visible: float, frame: int) -> None:
+        self.__x = x
+        self.__y = y
+        self.__z = z
+        self.__visible = visible
+        self.__frame = frame
+
+    def get_all(self) -> tuple[float, float, float, float, int]:
+        return self.__x, self.__y, self.__z, self.__visible, self.__frame
+
     def __str__(self) -> str:
-        """
-        Returns a string representation of the landmark.
-        """
         return f"(x={self.__x}, y={self.__y}, z={self.__z}, visible={self.__visible}, frame={self.__frame})"

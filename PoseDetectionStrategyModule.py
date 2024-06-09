@@ -1,36 +1,28 @@
 from abc import ABC, abstractmethod
 import cv2
-from typing import Any
+from typing import Any, Dict
 import mediapipe as mp
 from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmarkList
 
+from BodyLandmarkModule import BodyLandmark
+
+
 class PoseDetectionStrategy(ABC):
-    """
-        TODO: The return type currently is Any but it should be some kind of NormalizedLandmarkList
-              That is exclusive to MediaPipe. When the ai API gets changed the return DataType will change.
-    """
     @abstractmethod
     def detect_pose(self, img: cv2.Mat) -> Any:
         pass
 
     @abstractmethod
-    def drawPoseLandmarks(self, img: cv2.Mat, results: NormalizedLandmarkList) -> cv2.Mat:
+    def drawPoseLandmarks(self, img: cv2.Mat, results: Any) -> cv2.Mat:
         pass
 
+    @abstractmethod
+    def convertToBodyLandmark(self, results: Any, frame: int) -> Dict[int, BodyLandmark]:
+        pass
 
 class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
     def __init__(self, mode: bool = False, uBody: bool = False, smooth: bool = True, 
                  detectionCon: float = 0.5, trackCon: float = 0.5) -> None:
-        """
-            Initializes the PoseDetector with the given configuration.
-
-            Args:
-                mode (bool): Static image mode.
-                uBody (bool): Enable upper body segmentation.
-                smooth (bool): Smooth landmarks.
-                detectionCon (float): Minimum detection confidence.
-                trackCon (float): Minimum tracking confidence.
-        """
         self.mode = mode
         self.uBody = uBody
         self.smooth = smooth
@@ -50,20 +42,9 @@ class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
         )
 
     def detect_pose(self, img: cv2.Mat) -> NormalizedLandmarkList:
-        results = self.pose.process(img)
-        return results
+        return self.pose.process(img)
 
     def drawPoseLandmarks(self, img: cv2.Mat, results: NormalizedLandmarkList) -> cv2.Mat:
-        """
-            Draws pose landmarks on an image.
-
-            Args:
-                img (cv2.Mat): The input image.
-                results: The results object containing pose landmarks.
-
-            Returns:
-                cv2.Mat: The image with pose landmarks drawn.
-        """
         if results.pose_landmarks:
             self.mpDraw.draw_landmarks(
                 img,
@@ -71,6 +52,18 @@ class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
                 self.mpPose.POSE_CONNECTIONS
             )
         return img
+
+    def convertToBodyLandmark(self, results: NormalizedLandmarkList, frame: int) -> Dict[int, BodyLandmark]:
+        landmarks: Dict[int, BodyLandmark] = {}
+
+        if results.pose_landmarks:
+            for idx, lm in enumerate(results.pose_landmarks.landmark):
+                body_landmark = BodyLandmark()
+                body_landmark.set_all(lm.x, lm.y, lm.z, lm.visibility, frame)
+                landmarks[idx] = body_landmark
+
+        return landmarks
+
 
 class AnotherPoseDetection(PoseDetectionStrategy):
     def detect_pose(self, img: cv2.Mat) -> NormalizedLandmarkList:
