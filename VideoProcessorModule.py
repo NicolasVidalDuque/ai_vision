@@ -19,12 +19,14 @@ class VideoProcessor:
 
         # Default strategy is MediapipePoseDetectionStrategy if none is provided
         strategy: PoseDetectionStrategy = injectected_strategy or MediapipePoseDetectionStrategy()
+
         self.detector: PoseDetector = PoseDetector(strategy)
 
         self.data_converter = DataConverter(strategy)
         
         # TODO: For now it stores only one video. Next it has to be able to store a list of videos (process a large dataset of videos)
         self.videoDataSet: VideoLandmarkDataSet = VideoLandmarkDataSet(self.video_path)
+
 
     def verify_video_path(self) -> str:
         video_path = os.path.join('./videos', self.video_name)
@@ -33,13 +35,15 @@ class VideoProcessor:
         else:
             return video_path
     
-    def set_video_display(self, video_display: bool) -> None:
 
+    def set_video_display(self, video_display: bool) -> None:
         self.video_display = video_display
+
 
     def set_writable_flags(self, img: cv2.Mat, setting: bool) -> None:
         if hasattr(img, "flags"):
             img.flags.writeable = setting
+
 
     def process_video(self) -> None:
 
@@ -49,7 +53,6 @@ class VideoProcessor:
         previous_time: float = time.time()
 
         frame: int  = 0
-
         converted: Dict[int, BodyLandmark]
 
         while success:
