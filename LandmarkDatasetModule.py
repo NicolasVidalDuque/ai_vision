@@ -1,27 +1,20 @@
-from typing import List, Dict
+from typing import Dict
 from BodyLandmarkModule import BodyLandmark
+import numpy as np
 
 class VideoLandmarkDataSet:
-    """
-        This data structure has:
-            key: int: each body landmark index (shoulder -> 1, head -> 33)... see API documentation to see each landmark id
-            List[BodyLandmark]: one column corresponds to one frame. Each frame has all landmarks positions and attributes at that specific frame.
-
-            Therefore one value in the "matrix" corresponds to (row, col) : (frame, landmark_id)
-
-        TODO: 
-            Create new method: to_csv()
-    """
-
     def __init__(self, file_name: str) -> None:
-        self.dicLandmarks: Dict[int, List[BodyLandmark]] = {}
+        self.dicLandmarks: Dict[int, np.ndarray] = {}
         self.file_name: str = file_name
 
-    def addLandmarks(self, landmarkDict: Dict[int, BodyLandmark], frame: int) -> None:
+
+    def addLandmarks(self, landmarkDict: Dict[int, BodyLandmark]) -> None:
         for key, value_lm in landmarkDict.items():
             if key not in self.dicLandmarks:
-                self.dicLandmarks[key] = []
-            self.dicLandmarks[key].append(value_lm)
+                self.dicLandmarks[key] = np.empty((0, 4), dtype=np.float16)
+            new_landmark = np.array([[round(value_lm.x, 2), round(value_lm.y, 2), round(value_lm.z, 2), round(value_lm.visible, 2)]], dtype=np.float16)
+            self.dicLandmarks[key] = np.append(self.dicLandmarks[key], new_landmark, axis=0)
 
-    def get_landmarks(self) -> Dict[int, List[BodyLandmark]]:
+
+    def get_landmarks(self) -> Dict[int, np.ndarray]:
         return self.dicLandmarks

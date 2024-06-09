@@ -24,6 +24,7 @@ class VideoProcessor:
         # Initialize the VideoDisplayer
         self.displayer = VideoDisplayer() if self.video_display else None
 
+
     def verify_video_path(self) -> str:
         video_path = os.path.join('./videos', self.video_name)
         if not os.path.isfile(video_path):
@@ -31,13 +32,11 @@ class VideoProcessor:
         else:
             return video_path
 
-    def set_video_display(self, video_display: bool) -> None:
-        self.video_display = video_display
-        self.displayer = VideoDisplayer() if video_display else None
 
     def set_writable_flags(self, img: cv2.Mat, setting: bool) -> None:
         if hasattr(img, "flags"):
             img.flags.writeable = setting
+
 
     def process_video(self) -> None:
         success: bool = True
@@ -59,8 +58,8 @@ class VideoProcessor:
             self.set_writable_flags(img, True)
             img = self.strategy.drawPoseLandmarks(img, results)
 
-            converted = self.strategy.convertToBodyLandmark(results, frame)
-            self.videoDataSet.addLandmarks(converted, frame)
+            converted = self.strategy.convertToBodyLandmark(results)
+            self.videoDataSet.addLandmarks(converted)
             frame += 1
 
             if self.video_display:
@@ -74,9 +73,11 @@ class VideoProcessor:
         if self.video_display:
             self.displayer.close()
 
+
     def save_results(self, injected_resultSaver: ResultSaver = None) -> None:
         instance_result_saver: ResultSaver = injected_resultSaver or ResultSaver()
         instance_result_saver.save_results(self.video_name, self.videoDataSet)
+
 
     def colorCorrect(self, img: cv2.Mat, conversion: int) -> cv2.Mat:
         return cv2.cvtColor(img, conversion)

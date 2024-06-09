@@ -53,13 +53,12 @@ class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
             )
         return img
 
-    def convertToBodyLandmark(self, results: NormalizedLandmarkList, frame: int) -> Dict[int, BodyLandmark]:
+    def convertToBodyLandmark(self, results: NormalizedLandmarkList) -> Dict[int, BodyLandmark]:
         landmarks: Dict[int, BodyLandmark] = {}
 
         if results.pose_landmarks:
             for idx, lm in enumerate(results.pose_landmarks.landmark):
-                body_landmark = BodyLandmark()
-                body_landmark.set_all(lm.x, lm.y, lm.z, lm.visibility, frame)
+                body_landmark = BodyLandmark(x=lm.x, y=lm.y, z=lm.z, visible=lm.visibility)
                 landmarks[idx] = body_landmark
 
         return landmarks
