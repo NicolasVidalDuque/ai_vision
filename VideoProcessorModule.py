@@ -1,11 +1,9 @@
 import os
 import cv2
 import time
-from PoseLandmarkDetectorModule import PoseDetector
 from LandmarkDatasetModule import VideoLandmarkDataSet
 from PoseDetectionStrategyModule import PoseDetectionStrategy, MediapipePoseDetectionStrategy
 from ResultSaverModule import ResultSaver
-from DataConverterClass import DataConverter
 from BodyLandmarkModule import BodyLandmark
 
 class VideoProcessor:
@@ -18,11 +16,7 @@ class VideoProcessor:
         self.video_capture: cv2.Mat = cv2.VideoCapture(self.video_path)
 
         # Default strategy is MediapipePoseDetectionStrategy if none is provided
-        strategy: PoseDetectionStrategy = injectected_strategy or MediapipePoseDetectionStrategy()
-
-        self.detector: PoseDetector = PoseDetector(strategy)
-
-        self.data_converter = DataConverter(strategy)
+        self.strategy: PoseDetectionStrategy = injectected_strategy or MediapipePoseDetectionStrategy()
         
         # TODO: For now it stores only one video. Next it has to be able to store a list of videos (process a large dataset of videos)
         self.videoDataSet: VideoLandmarkDataSet = VideoLandmarkDataSet(self.video_path)
@@ -60,7 +54,7 @@ class VideoProcessor:
             self.set_writable_flags(img, False)
             # TODO: Create a method to identify which color coding does the original video has.
             #       From that, determine if a conversion is needed
-            color_corrected = self.detector.colorCorrect(img, cv2.COLOR_BGR2RGB)
+            color_corrected = self.colorCorrect(img, cv2.COLOR_BGR2RGB)
 
             """
                 results variable doesn't have a default dtype
@@ -70,11 +64,11 @@ class VideoProcessor:
 
                 That method has to work with the same return type from the API.
             """
-            results = self.detector.strategy.detect_pose(color_corrected) # AI VISION
+            results = self.strategy.detect_pose(color_corrected) # AI VISION
             self.set_writable_flags(img, True)
-            img = self.detector.strategy.drawPoseLandmarks(img, results)
+            img = self.strategy.drawPoseLandmarks(img, results)
 
-            converted = self.data_converter.convert(results, frame)
+            converted = self.strategy.convertToBodyLandmark(results, frame)
             
             self.videoDataSet.addLandmarks(converted, frame)
             frame += 1
@@ -105,3 +99,7 @@ class VideoProcessor:
     def save_results(self, injected_resultSaver: ResultSaver = None) -> None:
         instance_result_saver: ResultSaver = injected_resultSaver or ResultSaver()
         instance_result_saver.save_results(self.video_name, self.videoDataSet)
+
+    def colorCorrect(self, img: cv2.Mat, conversion: int) -> cv2.Mat:
+
+        return cv2.cvtColor(img, conversion)

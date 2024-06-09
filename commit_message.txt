@@ -1,3 +1,10 @@
-1. Changed BodyLandmark datatype. Now inits with 0's. Getters and setters for all properties.
-2. Added convert_to_body_landmarks method on ABC PoseDetectionStrategy.
-3. VideoLandmarkDataSet.addLandmarks has been updated to work with Dict[int, BodyLandmark] instead of NormalizedLandmarkList
+Diegos correction:
+    talking with Diego we noticed some classes where just innecesary.
+    considered as passthrough's, they did nothing but call another method.
+
+    Deleted: DataConverterClass and PoseLandmarkDetectorModule.
+
+    Now the strategy will have the interface (abstract class) for these methods:
+    - convertToBodyLandmark
+    - drawPoseLandmarks
+    - detect_pose
