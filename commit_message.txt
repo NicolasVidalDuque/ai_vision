@@ -1,10 +1,7 @@
-Diegos correction:
-    talking with Diego we noticed some classes where just innecesary.
-    considered as passthrough's, they did nothing but call another method.
+VideoDisplayer, ResultSaver, VideoLandmarkDataSet:
+- separated video display responsabilities from the VideoProcessor
+- Created video_continue for stoping the main loop
+- Removed the to_pandas method.
+- Wrote everything to save into csv from scratch
+- Added to VideoLandmarkDataSet a get_landmarks method
 
-    Deleted: DataConverterClass and PoseLandmarkDetectorModule.
-
-    Now the strategy will have the interface (abstract class) for these methods:
-    - convertToBodyLandmark
-    - drawPoseLandmarks
-    - detect_pose
