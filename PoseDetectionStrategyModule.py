@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import cv2
-from typing import Any, Dict
+from typing import Any, Dict, Set
 import mediapipe as mp
 from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmarkList
 
@@ -41,6 +41,8 @@ class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
             min_tracking_confidence=self.trackCon
         )
 
+        self.target_landmarks: Set[int] = {0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32}
+
     def detect_pose(self, img: cv2.Mat) -> NormalizedLandmarkList:
         return self.pose.process(img)
 
@@ -58,8 +60,8 @@ class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
 
         if results.pose_landmarks:
             for idx, lm in enumerate(results.pose_landmarks.landmark):
-                body_landmark = BodyLandmark(x=lm.x, y=lm.y, z=lm.z, visible=lm.visibility)
-                landmarks[idx] = body_landmark
+                if idx in self.target_landmarks:
+                    landmarks[idx] = BodyLandmark(x=round(lm.x, 2), y=round(lm.y, 2), z=round(lm.z, 2), visible=round(lm.visibility, 2))
 
         return landmarks
 
