@@ -11,7 +11,7 @@ class VideoLandmarkDataSet:
     def addLandmarks(self, landmarkDict: Dict[int, BodyLandmark]) -> None:
         for key, value_lm in landmarkDict.items():
             if key not in self.dicLandmarks:
-                self.dicLandmarks[key] = np.empty((0, 4))
+                self.dicLandmarks[key] = np.empty((0, 4), dtype=np.float16)
             new_landmark = np.array([[value_lm.x, value_lm.y, value_lm.z, value_lm.visible]])
             self.dicLandmarks[key] = np.append(self.dicLandmarks[key], new_landmark, axis=0)
 
