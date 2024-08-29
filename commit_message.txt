@@ -1,7 +1,0 @@
-VideoDisplayer, ResultSaver, VideoLandmarkDataSet:
-- separated video display responsabilities from the VideoProcessor
-- Created video_continue for stoping the main loop
-- Removed the to_pandas method.
-- Wrote everything to save into csv from scratch
-- Added to VideoLandmarkDataSet a get_landmarks method
-

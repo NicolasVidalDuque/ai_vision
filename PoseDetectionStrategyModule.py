@@ -61,7 +61,7 @@ class MediapipePoseDetectionStrategy(PoseDetectionStrategy):
         if results.pose_landmarks:
             for idx, lm in enumerate(results.pose_landmarks.landmark):
                 if idx in self.target_landmarks:
-                    landmarks[idx] = BodyLandmark(x=round(lm.x, 2), y=round(lm.y, 2), z=round(lm.z, 2), visible=round(lm.visibility, 2))
+                    landmarks[idx] = BodyLandmark(x=round(lm.x, 3), y=round(lm.y, 3), z=round(lm.z, 3), visible=round(lm.visibility, 3))
 
         return landmarks
 

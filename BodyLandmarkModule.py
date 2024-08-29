@@ -11,4 +11,4 @@ class BodyLandmark:
         return (self.x, self.y, self.z, self.visible)
 
     def __repr__(self) -> str:
-        return f"BodyLandmark(x={self.x:.2f}, y={self.y:.2f}, z={self.z:.2f}, visible={self.visible:.2f})"
+        return f"BodyLandmark(x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f}, visible={self.visible:.3f})"
